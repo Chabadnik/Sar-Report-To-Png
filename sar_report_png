@@ -20,7 +20,7 @@ else
 fi
 
 # prompts
-read -p "please provide the day of the month that you wish to get a report for (DD) > " DD
+read -p "please provide the day that you wish to get a report for (DD) > " DD
 
 read -p "please provide the month that you wish to get a report for (MM) > " MM
 
@@ -48,8 +48,8 @@ if [ -f $FILE ]; then
 	sed '/Average/,$d' < $FILE > x
 	grep "all" x > y
 	tr -s  ' ' ',' < y > newfile_all
-    	
-	# print out all the options	
+
+	# print out all the options
 	cat <<- EOF
 	fields you can choose from:
 	1 - usr
@@ -63,22 +63,22 @@ if [ -f $FILE ]; then
 	9 - gnice
 	10 - idle
 	EOF
-	
+
 	# prompt
 	read -p "please provide what field you wish to see (number) > " field
 	if [[ "$field" =~ ^[0-9](|0)$ ]]; then
 
 		real_field=$(( field + 2 ))
 		cut -d ',' -f 1 newfile_all > sar-time
-		
+
 		# getting x range
 		line1=$(head -n 1 sar-time)
 		line2=$(tail -n 1 sar-time)
-		
+
 		# getting other field and creating plot file
 		cut -d ',' -f $real_field newfile_all > sar-field
 		paste sar-time sar-field > plot_file
-		
+
 		# setting the dynamic/unique settings
 		echo "set output 'sar$YYYY$MM$DD.png'" >> plot.gnu
 		echo "set xrange ['$line1':'$line2']" >> plot.gnu
@@ -94,4 +94,4 @@ if [ -f $FILE ]; then
 else
 	echo "The file 'sar$YYYY$MM$DD' does not exist."
 	exit 1
-fi	
+fi
