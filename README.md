@@ -33,7 +33,7 @@ This software is built for Linux Distributions such as Ubuntu and LUbuntu.
 
 Open your terminal, and then go to the directory where the script is stored in (usually `Downloads`).
 
-## Step 2
+### Step 2
 
 In your terminal, enter the following command:
 
@@ -41,7 +41,7 @@ In your terminal, enter the following command:
 sar_report_png
 ```
 
-## Step 3
+### Step 3
 
 You will be met with the following prompts:
 
@@ -61,7 +61,7 @@ Enter the month of the year in the format `MM` such as `12`.
 
 Enter the year in the format `YYYY` such as `2018`.
 
-## Step 4
+### Step 4
 
 You will be met with the following prompt:
 
@@ -83,6 +83,6 @@ please provide what field you wish to see (number) >
 
 Enter the field you wish to see plotted over time. For example, if you wish to see `idle` plotted over time, then type `10`.
 
-## Step 5
+### Step 5
 
 Go to your home directory and find the `gnuplot_plots` directory. Open it, and inside it will contain a png of the customized report.
