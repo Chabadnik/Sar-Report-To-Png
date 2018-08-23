@@ -1,0 +1,97 @@
+#!/bin/bash
+
+# time_slice_script : Will look for logs with certain times in sar logs
+
+# if plot.gnu exists, remove it
+if [ -f plot.gnu ]; then
+	rm plot.gnu
+fi
+
+# if plot_file exists, remove it
+if [ -f plot_file ]; then
+	rm plot_file
+fi
+
+# checking to see if you need to make gnuplot_plots dir
+if [ -d ~/gnuplot_plots ]; then
+	echo ""
+else
+	mkdir ~/gnuplot_plots
+fi
+
+# prompts
+read -p "please provide the day of the month that you wish to get a report for (DD) > " DD
+
+read -p "please provide the month that you wish to get a report for (MM) > " MM
+
+read -p "please provide the year that you wish to get a report for (YYYY) > " YYYY
+
+# configuring gnuplot settings
+writeGnuplot() {
+	echo "set size ratio 0.5" >> plot.gnu
+	echo "set xdata time" >> plot.gnu
+	echo "set timefmt '%H:%M:%S'" >> plot.gnu
+	echo "set format x '%H:%M:%S'" >> plot.gnu
+	echo "set xlabel 'time'" >> plot.gnu
+	echo "set yrange [0:100]" >> plot.gnu
+	echo "set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 0.5" >> plot.gnu
+	echo "set terminal png size 800,600 enhanced font 'Helvetica,15'" >> plot.gnu
+}
+
+writeGnuplot
+
+# creating the files
+FILE=/var/log/sysstat/sar$YYYY$MM$DD
+if [ -f $FILE ]; then
+
+	# making nice file for collecting data
+	sed '/Average/,$d' < $FILE > x
+	grep "all" x > y
+	tr -s  ' ' ',' < y > newfile_all
+    	
+	# print out all the options	
+	cat <<- EOF
+	fields you can choose from:
+	1 - usr
+	2 - nice
+	3 - sys
+	4 - iowait
+	5 - steal
+	6 - irq
+	7 - soft
+	8 - guest
+	9 - gnice
+	10 - idle
+	EOF
+	
+	# prompt
+	read -p "please provide what field you wish to see (number) > " field
+	if [[ "$field" =~ ^[0-9](|0)$ ]]; then
+
+		real_field=$(( field + 2 ))
+		cut -d ',' -f 1 newfile_all > sar-time
+		
+		# getting x range
+		line1=$(head -n 1 sar-time)
+		line2=$(tail -n 1 sar-time)
+		
+		# getting other field and creating plot file
+		cut -d ',' -f $real_field newfile_all > sar-field
+		paste sar-time sar-field > plot_file
+		
+		# setting the dynamic/unique settings
+		echo "set output 'sar$YYYY$MM$DD.png'" >> plot.gnu
+		echo "set xrange ['$line1':'$line2']" >> plot.gnu
+		echo "set xtics '00:00:00',7200,'23:59:59'" >> plot.gnu
+		echo "plot 'plot_file' using 1:2 with linespoints ls 1 notitle" >> plot.gnu
+		gnuplot -p plot.gnu
+		mv sar$YYYY$MM$DD.png ~/gnuplot_plots
+		echo "check the gnuplot_plots directory in your home directory for your png!"
+	else
+		echo "Invalid entry." >&2
+		exit 1
+	fi
+else
+	echo "The file 'sar$YYYY$MM$DD' does not exist."
+	exit 1
+fi	
