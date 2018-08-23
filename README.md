@@ -55,11 +55,11 @@ please provide the year that you wish to get a report for (YYYY) >
 
 Each of these prompts will ask you for information on the `sar` report you wish to collect data from.
 
-Enter the day of the month in the format `DD` such as `01`.
+Enter the day in the format `DD` such as `01` for the first prompt.
 
-Enter the month of the year in the format `MM` such as `12`.
+Enter the month in the format `MM` such as `12` for the second prompt.
 
-Enter the year in the format `YYYY` such as `2018`.
+Enter the year in the format `YYYY` such as `2018` for the third prompt.
 
 ### Step 4
 
